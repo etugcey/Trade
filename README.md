@@ -1,6 +1,6 @@
 # Python Trading Bot with Backtest (Binance API) by Chat GPT
 
-## CODE EXPLAINED:
+  ### CODE EXPLAINED:
 
 Let's go through each section of the code and its purpose:
 
@@ -16,7 +16,7 @@ Let's go through each section of the code and its purpose:
 
 6. Backtesting and Live Trading: Depending on the mode chosen by the user, either perform backtesting or live trading. Set up the backtesting engine, fetch historical data from Binance (for backtesting), add the data feed, strategy, and set broker parameters. Perform the backtest or live trading, print portfolio values, and plot the backtest results (for backtesting). After the backtest or live trading, remove the extracted config.ini file using os.remove.
 
-## SECURITY PRECAUTIONS EXPLAINED:
+### SECURITY PRECAUTIONS EXPLAINED:
 
 Keep API Keys Private: Never share your API keys or sensitive information with anyone. Keep them secret to prevent unauthorized access to your account.
 
