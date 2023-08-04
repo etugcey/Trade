@@ -37,13 +37,130 @@ def extract_config(rar_path, password):
             config_content = config_file.read()
     return config_content.decode('utf-8')
 ```
-3. Prompt User for RAR Password: Prompt the user to enter the password for the RAR archive using getpass.getpass.
+3. Entering RAR Password and Extracting API Keys
 
-4. Extract API Keys from RAR: Extract the content of config.ini using the extract_config function, supplying the RAR archive path and the provided password. Parse the API keys from the config content.
+```python
+Prompt the user to enter the password for the RAR archive containing the config.ini file using getpass.getpass.
+Call the extract_config function to extract the content of config.ini using the provided password.
+Parse the API keys (Binance API key and secret) from the extracted config.ini content using the configparser library.
 
-5. Define Simple Strategy: Define the SimpleStrategy class that implements a basic trading strategy based on a Simple Moving Average (SMA) crossover.
+rar_password = getpass.getpass("Enter password for the RAR archive: ")
 
-6. Backtesting and Live Trading: Depending on the mode chosen by the user, either perform backtesting or live trading. Set up the backtesting engine, fetch historical data from Binance (for backtesting), add the data feed, strategy, and set broker parameters. Perform the backtest or live trading, print portfolio values, and plot the backtest results (for backtesting). After the backtest or live trading, remove the extracted config.ini file using os.remove.
+config_content = extract_config('protected_config.rar', rar_password)
+
+config = configparser.ConfigParser()
+config.read_string(config_content)
+
+API_KEY = config.get('binance', 'api_key')
+API_SECRET = config.get('binance', 'api_secret')
+```
+
+4. Defining SimpleStrategy Class
+
+```python
+Define a trading strategy class SimpleStrategy that inherits from bt.Strategy.
+This class implements a simple trading strategy based on a Simple Moving Average (SMA) crossover.
+The strategy uses the SMA indicator to make trading decisions.
+The params attribute allows specifying parameters for the strategy, such as the SMA period.
+
+class SimpleStrategy(bt.Strategy):
+    """
+    Simple trading strategy based on a Simple Moving Average (SMA) crossover.
+    """
+    params = (
+        ('sma_period', 20),  # Parameter for the Simple Moving Average (SMA) period in days
+    )
+
+    def __init__(self):
+        # Create the Simple Moving Average indicator with the specified SMA period
+        self.sma = bt.indicators.SimpleMovingAverage(self.data, period=self.params.sma_period)
+
+    def next(self):
+        """
+        Executes on each new trading day.
+        If not in a position, checks for a long entry signal and places a buy order.
+        If in a long position, checks for a long exit signal and closes the position.
+        """
+        if not self.position:  # If no position, check for a long entry signal
+            if self.data.close[0] > self.sma[0]:  # Compare the current closing price with the SMA value
+                self.buy()  # Place a buy order to enter a long position
+        elif self.data.close[0] < self.sma[0]:  # If in a long position, check for a long exit signal
+            self.close()  # Close the current long position
+```
+
+5. Backtesting and Live Trading Explanation:
+
+The code is enclosed in an if __name__ == '__main__': block. This ensures that the contained code is executed only when the script is run directly, not when imported as a module.
+
+The user is prompted to choose a mode (backtest or live) using the input function. The chosen mode is converted to lowercase and stored in the mode variable.
+
+An instance of the Cerebro class, named cerebro, is created. Cerebro is the backtesting and optimization engine in backtrader.
+
+If the chosen mode is 'backtest':
+
+Historical data from Binance is fetched using the Client class, and daily klines (candlestick data) for the symbol 'BTCUSDT' are obtained.
+The fetched data is converted into a PandasData feed and added to the backtesting engine using cerebro.adddata(data).
+The SimpleStrategy class is added as the trading strategy to the backtesting engine.
+Initial parameters for the broker, such as cash, closing operation mode, and commission, are set.
+The starting portfolio value is printed, the backtest is executed using cerebro.run(), and the final portfolio value is printed.
+The backtest results are plotted using cerebro.plot().
+The extracted config.ini file is removed using os.remove() to ensure security.
+If the chosen mode is 'live':
+
+The SimpleStrategy class is added as the trading strategy to the backtesting engine.
+Initial parameters for the broker are set similarly to the backtesting mode.
+The starting portfolio value is printed, and the live trading is executed using cerebro.run().
+The final portfolio value after live trading is printed.
+The sections provide a choice between backtesting and live trading modes, configure the backtesting engine, execute the chosen mode, and display results.
+
+   
+```python
+# Backtesting and Live Trading
+if __name__ == '__main__':
+    mode = input("Choose mode (backtest/live): ").strip().lower()
+
+    cerebro = bt.Cerebro()  # Create a backtesting engine
+
+    if mode == 'backtest':
+        # Get Binance historical data
+        client = Client(API_KEY, API_SECRET)
+        klines = client.get_klines(symbol='BTCUSDT', interval=Client.KLINE_INTERVAL_1DAY)
+        data = bt.feeds.PandasData(dataname=klines, openinterest=None, datetime=0, open=1, high=2, low=3, close=4, volume=5)
+
+        cerebro.adddata(data)  # Add the data feed to the backtesting engine
+        cerebro.addstrategy(SimpleStrategy)  # Add the trading strategy to the backtesting engine
+        cerebro.broker.set_cash(1000)  # Set your initial capital to 1000 USDT
+        cerebro.broker.set_coc(True)  # Close on close (no intra-candle operations)
+        cerebro.broker.setcommission(commission=0.001)  # Set the Binance trading fee to 0.1% (0.001 as a fraction)
+
+        print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
+        # Print the starting portfolio value before running the backtest
+
+        cerebro.run()  # Run the backtest
+        print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+        # Print the final portfolio value after the backtest
+
+        cerebro.plot()  # Plot the backtest results
+
+        # Remove the extracted config.ini file
+        os.remove('config.ini')
+
+    elif mode == 'live':
+        cerebro.addstrategy(SimpleStrategy)  # Add the trading strategy to the backtesting engine
+        cerebro.broker.set_cash(1000)  # Set your initial capital to 1000 USDT
+        cerebro.broker.set_coc(True)  # Close on close (no intra-candle operations)
+        cerebro.broker.setcommission(commission=0.001)  # Set the Binance trading fee to 0.1% (0.001 as a fraction)
+
+        broker = cerebro.getbroker()
+        broker.setcommission(commission=0.001)  # Set the Binance trading fee
+
+        print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
+        # Print the starting portfolio value before running the live trading
+
+        cerebro.run()  # Run the live trading
+        print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+        # Print the final portfolio value after the live trading
+```
 
 ### SECURITY PRECAUTIONS EXPLAINED:
 
