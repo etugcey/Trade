@@ -56,6 +56,8 @@ config.read_string(config_content)
 
 API_KEY = config.get('binance', 'api_key')
 API_SECRET = config.get('binance', 'api_secret')
+# Remove the extracted config.ini file
+os.remove('config.ini')
 ```
 
 4. Defining SimpleStrategy Class
@@ -107,7 +109,7 @@ The SimpleStrategy class is added as the trading strategy to the backtesting eng
 Initial parameters for the broker, such as cash, closing operation mode, and commission, are set.
 The starting portfolio value is printed, the backtest is executed using cerebro.run(), and the final portfolio value is printed.
 The backtest results are plotted using cerebro.plot().
-The extracted config.ini file is removed using os.remove() to ensure security.
+
 If the chosen mode is 'live':
 
 The SimpleStrategy class is added as the trading strategy to the backtesting engine.
@@ -145,8 +147,7 @@ if __name__ == '__main__':
 
         cerebro.plot()  # Plot the backtest results
 
-        # Remove the extracted config.ini file
-        os.remove('config.ini')
+
 
     elif mode == 'live':
         cerebro.addstrategy(SimpleStrategy)  # Add the trading strategy to the backtesting engine
