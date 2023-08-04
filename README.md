@@ -1,6 +1,6 @@
 # Python Trading Bot with Backtest (Binance API) by Chat GPT
 
-  ### CODE EXPLAINED:
+### CODE EXPLAINED:
 
 Let's go through each section of the code and its purpose:
 
@@ -34,7 +34,7 @@ Code Review: Review the code for any vulnerabilities before running it, and only
 
 Limit API Permissions: When creating API keys on Binance, limit their permissions to only what your script requires (e.g., trading and accessing market data).
 
-## INSTALLATION EXPLAINED:
+### INSTALLATION EXPLAINED:
 
 Install Python: If you haven't already, download and install Python from the official website (https://www.python.org/downloads/). Choose the appropriate version for your operating system.
 
