@@ -31,6 +31,8 @@ config.read_string(config_content)
 
 API_KEY = config.get('binance', 'api_key')
 API_SECRET = config.get('binance', 'api_secret')
+# Remove the extracted config.ini file
+os.remove('config.ini')
 
 class SimpleStrategy(bt.Strategy):
     """
@@ -82,10 +84,6 @@ if __name__ == '__main__':
         # Print the final portfolio value after the backtest
 
         cerebro.plot()  # Plot the backtest results
-
-        # Remove the extracted config.ini file
-        os.remove('config.ini')
-
     elif mode == 'live':
         cerebro.addstrategy(SimpleStrategy)  # Add the trading strategy to the backtesting engine
         cerebro.broker.set_cash(1000)  # Set your initial capital to 1000 USDT
