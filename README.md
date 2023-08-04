@@ -39,7 +39,6 @@ def extract_config(rar_path, password):
 ```
 3. Entering RAR Password and Extracting API Keys
 
-
 Prompt the user to enter the password for the RAR archive containing the config.ini file using getpass.getpass.
 Call the extract_config function to extract the content of config.ini using the provided password.
 Parse the API keys (Binance API key and secret) from the extracted config.ini content using the configparser library.
@@ -58,12 +57,12 @@ API_SECRET = config.get('binance', 'api_secret')
 
 4. Defining SimpleStrategy Class
 
-```python
 Define a trading strategy class SimpleStrategy that inherits from bt.Strategy.
 This class implements a simple trading strategy based on a Simple Moving Average (SMA) crossover.
 The strategy uses the SMA indicator to make trading decisions.
 The params attribute allows specifying parameters for the strategy, such as the SMA period.
 
+```python
 class SimpleStrategy(bt.Strategy):
     """
     Simple trading strategy based on a Simple Moving Average (SMA) crossover.
