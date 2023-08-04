@@ -6,6 +6,14 @@ Let's go through each section of the code and its purpose:
 
 1. Importing Libraries: Import necessary libraries, including backtrader, configparser, rarfile, getpass, os, and the Client class from binance.client.
 
+```python
+import backtrader as bt
+import configparser
+import rarfile
+import getpass
+import os
+from binance.client import Client
+```
 2. extract_config Function: Define a function to extract the content of config.ini from the password-protected RAR archive.
 
 3. Prompt User for RAR Password: Prompt the user to enter the password for the RAR archive using getpass.getpass.
