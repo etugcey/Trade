@@ -39,11 +39,12 @@ def extract_config(rar_path, password):
 ```
 3. Entering RAR Password and Extracting API Keys
 
-```python
+
 Prompt the user to enter the password for the RAR archive containing the config.ini file using getpass.getpass.
 Call the extract_config function to extract the content of config.ini using the provided password.
 Parse the API keys (Binance API key and secret) from the extracted config.ini content using the configparser library.
 
+```python
 rar_password = getpass.getpass("Enter password for the RAR archive: ")
 
 config_content = extract_config('protected_config.rar', rar_password)
