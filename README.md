@@ -4,7 +4,8 @@
 
 Let's go through each section of the code and its purpose:
 
-1. Importing Libraries: Import necessary libraries, including backtrader, configparser, rarfile, getpass, os, and the Client class from binance.client.
+1. Importing Libraries: 
+   Import necessary libraries for the code to work: backtrader for backtesting, configparser for reading configuration files, rarfile for extracting RAR archives, getpass for secure password input, os for file operations, and Client from binance.client for Binance API interaction.
 
 ```python
 import backtrader as bt
@@ -14,8 +15,28 @@ import getpass
 import os
 from binance.client import Client
 ```
-2. extract_config Function: Define a function to extract the content of config.ini from the password-protected RAR archive.
+2. Defining extract_config Function
 
+Define a function extract_config to extract the content of the config.ini file from a password-protected RAR archive.
+This function takes two parameters: rar_path (path to the RAR archive) and password (password for the archive).
+It uses the rarfile library to open the RAR archive, set the password, and read the content of config.ini.
+The extracted content is returned as a string.
+
+```python
+def extract_config(rar_path, password):
+    """
+    Extracts the content of 'config.ini' from the password-protected RAR archive.
+    
+    :param rar_path: Path to the password-protected RAR archive.
+    :param password: Password for the RAR archive.
+    :return: Content of 'config.ini' as a string.
+    """
+    with rarfile.RarFile(rar_path) as rar:
+        rar.setpassword(password.encode('utf-8'))
+        with rar.open('config.ini') as config_file:
+            config_content = config_file.read()
+    return config_content.decode('utf-8')
+```
 3. Prompt User for RAR Password: Prompt the user to enter the password for the RAR archive using getpass.getpass.
 
 4. Extract API Keys from RAR: Extract the content of config.ini using the extract_config function, supplying the RAR archive path and the provided password. Parse the API keys from the config content.
